@@ -13,7 +13,7 @@ import FavoriteIcon from '@material-ui/icons/Favorite';
 import ShareIcon from '@material-ui/icons/Share';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { Tooltip } from '@material-ui/core';
-import img from "../../logo.svg"
+import { useHistory } from 'react-router';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -23,6 +23,11 @@ const useStyles = makeStyles((theme) => ({
   media: {
     height: 0,
     paddingTop: '56.25%', // 16:9
+  },
+  discription: {
+    textOverflow: "ellipsis",
+    overflow: "hidden",
+    whiteSpace: "nowrap"
   },
   expand: {
     transform: 'rotate(0deg)',
@@ -39,43 +44,52 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Doc() {
+export default function Doc(props) {
   const classes = useStyles();
+  const history = useHistory();
+  console.log(props.data)
+
+  const openCard = () => {
+    history.push(`/doc/${props.data.title}?data=${props.data.data}`);
+  }
+
+  const removeOnClick = (e) => {
+    e.stopPropagation()
+  }
 
   return (
-    <Card className={classes.root}>
+    <Card onClick={openCard} className={classes.root}>
       <CardHeader
         avatar={
-          <Tooltip title="Add" placement="top" arrow>
-            <Avatar aria-label="recipe" className={classes.avatar}>
+          <Tooltip onClick={removeOnClick} title={props.data.author} placement="top" arrow>
+            <Avatar src={props.data.avatar} aria-label="recipe" className={classes.avatar}>
               R
             </Avatar>
           </Tooltip>
         }
         action={
-          <IconButton aria-label="settings">
+          <IconButton onClick={removeOnClick} aria-label="settings">
             <MoreVertIcon />
           </IconButton>
         }
-        title="Shrimp and Chorizo Paella"
-        subheader="September 14, 2016"
+        title={props.data.title}
+        subheader={props.data.date}
       />
       <CardMedia
         className={classes.media}
-        image={img}
-        title="Paella dish"
+        image={props.data.cover}
+        title={props.data.title}
       />
       <CardContent>
-        <Typography variant="body2" color="textSecondary" component="p">
-          This impressive paella is a perfect party dish and a fun meal to cook together with your
-          guests. Add 1 cup of frozen peas along with the mussels, if you like.
+        <Typography className={classes.discription} variant="body2" color="textSecondary" component="p">
+          {JSON.parse(props.data.data).blocks[0].text}
         </Typography>
       </CardContent>
       <CardActions disableSpacing>
-        <IconButton aria-label="add to favorites">
+        <IconButton onClick={removeOnClick} aria-label="add to favorites">
           <FavoriteIcon />
         </IconButton>
-        <IconButton aria-label="share">
+        <IconButton onClick={removeOnClick} aria-label="share">
           <ShareIcon />
         </IconButton>
       </CardActions>

@@ -1,14 +1,16 @@
-import MUIRichTextEditor from "mui-rte"
-import React from 'react'
-import AppBar from '@material-ui/core/AppBar'
-import Toolbar from '@material-ui/core/Toolbar'
-import IconButton from '@material-ui/core/IconButton'
-import Typography from '@material-ui/core/Typography'
-import { alpha, makeStyles } from '@material-ui/core/styles'
-import MenuIcon from '@material-ui/icons/Menu'
-import firebase from '../../firebase'
-import { Box, Button } from '@material-ui/core'
-import { useHistory, useLocation } from 'react-router'
+import React, { useEffect, useState } from 'react';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import IconButton from '@material-ui/core/IconButton';
+import Typography from '@material-ui/core/Typography';
+import InputBase from '@material-ui/core/InputBase';
+import { alpha, makeStyles } from '@material-ui/core/styles';
+import MenuIcon from '@material-ui/icons/Menu';
+import SearchIcon from '@material-ui/icons/Search';
+import AddIcon from '@material-ui/icons/Add';
+import firebase from '../../firebase';
+import { Button } from '@material-ui/core';
+import { useHistory } from 'react-router';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -23,15 +25,6 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.up('sm')]: {
       display: 'block',
     },
-  },
-  text: {
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    padding: "0 100px"
-  },
-  input: {
-    display: 'none',
   },
   search: {
     position: 'relative',
@@ -73,23 +66,32 @@ const useStyles = makeStyles((theme) => ({
       },
     },
   },
-}))
+}));
 
-export default function Doc() {
-  const classes = useStyles()
-  const history = useHistory()
-  let data = new URLSearchParams(useLocation().search).get("data")
-  console.log(data)
+export default function Home() {
+  const classes = useStyles();
+  const history = useHistory();
+  const [user, setUser] = useState("")
 
   const signOut = () => {
     firebase.auth().signOut().then(() => {
-      history.push("/login")
+      history.push("/login");
     }).catch((error) => {
       alert(
         `signOut in fail :(.`
-      )
-    })
+      );
+    });
   }
+
+  useEffect(() => {
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        setUser(user)
+      } else {
+        history.push("/login");
+      }
+    });
+  },[history])
 
   return (
     <div className={classes.root}>
@@ -104,19 +106,33 @@ export default function Doc() {
             <MenuIcon />
           </IconButton>
           <Typography className={classes.title} variant="h6" noWrap>
-            Material-UI
+            {user.displayName}
           </Typography>
+          <IconButton
+            onClick={() => history.push("/new")}
+            edge="start"
+            className={classes.menuButton}
+            color="inherit"
+            aria-label="open drawer"
+          >
+            <AddIcon />
+          </IconButton>
+          <div className={classes.search}>
+            <div className={classes.searchIcon}>
+              <SearchIcon />
+            </div>
+            <InputBase
+              placeholder="Search…"
+              classes={{
+                root: classes.inputRoot,
+                input: classes.inputInput,
+              }}
+              inputProps={{ 'aria-label': 'search' }}
+            />
+          </div>
           <Button onClick={signOut} color="inherit">Sign Out</Button>
         </Toolbar>
       </AppBar>
-      <Box className={classes.text}>
-        <MUIRichTextEditor
-          defaultValue={data}
-          readOnly={true}
-        />
-        <div style={{width: 100, height: 50}}></div>
-      </Box>
     </div>
-  )
+  );
 }
-

@@ -68,13 +68,12 @@ export default function SignInSide() {
     error: false,
     errorMessage: ""
   })
-  console.log(email, password)
 
-  const logIn = (e) => {
-    // e.preventdefault()
+  const logIn = () => {
     firebase.auth().signInWithEmailAndPassword(email, password)
       .then((userCredential) => {
         var user = userCredential.user;
+        console.log(user.email)
         history.push("/");
       })
       .catch((error) => {

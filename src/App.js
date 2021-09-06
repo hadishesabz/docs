@@ -6,6 +6,7 @@ import {
 import Home from "./view/pages/Home"
 import Login from "./view/pages/Login"
 import NewDoc from "./view/pages/NewDoc";
+import Doc from "./view/pages/Doc";
 
 function App() {
   return (
@@ -22,6 +23,9 @@ function App() {
           </Route>
           <Route exact path="/new">
             <NewDoc />
+          </Route>
+          <Route exact path="/doc/:title">
+            <Doc />
           </Route>
         </Switch>
       </div>

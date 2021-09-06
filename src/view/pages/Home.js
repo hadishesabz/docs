@@ -73,6 +73,7 @@ export default function Home() {
   const classes = useStyles();
   const history = useHistory();
   const [docs, setDocs] = useState([])
+  const [user, setUser] = useState("")
 
   const signOut = () => {
     firebase.auth().signOut().then(() => {
@@ -87,6 +88,7 @@ export default function Home() {
   useEffect(() => {
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
+        setUser(user)
         firebase.database().ref("docs").on("value", (snapshot) => {
           const objects = snapshot.val()
           const objectList = []
@@ -95,11 +97,8 @@ export default function Home() {
           }
           setDocs(objectList)
         })
-        var uid = user.uid;
-        // ...
       } else {
         history.push("/login");
-        // ...
       }
     });
   },[history])
@@ -117,7 +116,7 @@ export default function Home() {
             <MenuIcon />
           </IconButton>
           <Typography className={classes.title} variant="h6" noWrap>
-            Material-UI
+            {user.displayName}
           </Typography>
           <IconButton
             onClick={() => history.push("/new")}
@@ -146,16 +145,7 @@ export default function Home() {
       </AppBar>
       <Box display="flex" flexDirection="row" justifyContent="center" flexWrap="wrap">
         {docs.map(doc => (
-          <>
-          <Doc />
-          <Doc />
-          <Doc />
-          <Doc />
-          <Doc />
-          <Doc />
-          <Doc />
-          <Doc />
-          </>
+          <Doc key={doc.title} data={doc} />
         ))}
       </Box>
     </div>
