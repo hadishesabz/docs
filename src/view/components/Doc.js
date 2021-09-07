@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
@@ -14,6 +14,7 @@ import ShareIcon from '@material-ui/icons/Share';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { Tooltip } from '@material-ui/core';
 import { useHistory } from 'react-router';
+import firebase from '../../firebase'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -47,7 +48,7 @@ const useStyles = makeStyles((theme) => ({
 export default function Doc(props) {
   const classes = useStyles();
   const history = useHistory();
-  console.log(props.data)
+  const [avatar, setAvatar] = useState()
 
   const openCard = () => {
     history.push(`/doc/${props.data.title}?data=${props.data.data}`);
@@ -57,14 +58,19 @@ export default function Doc(props) {
     e.stopPropagation()
   }
 
+  useEffect(() => {
+    firebase.storage().ref(props.data.avatar).getDownloadURL()
+    .then(img => {
+      setAvatar(img)
+    })
+  },[props.data.avatar])
+
   return (
     <Card onClick={openCard} className={classes.root}>
       <CardHeader
         avatar={
           <Tooltip onClick={removeOnClick} title={props.data.author} placement="top" arrow>
-            <Avatar src={props.data.avatar} aria-label="recipe" className={classes.avatar}>
-              R
-            </Avatar>
+            <Avatar alt={props.data.author} src={avatar} aria-label="recipe" className={classes.avatar} />
           </Tooltip>
         }
         action={

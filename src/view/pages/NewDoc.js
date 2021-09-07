@@ -164,7 +164,7 @@ export default function NewDoc() {
         </label>
         </Box>
         <MUIRichTextEditor
-          label={title.error ? "this field is required !!!!" : "Type something here..."}
+          label={title.error ? "This field is required !!!!" : "Type something here..."}
           onSave={save}
           inlineToolbar={true}
         />

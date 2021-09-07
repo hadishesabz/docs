@@ -73,8 +73,11 @@ export default function SignInSide() {
     firebase.auth().signInWithEmailAndPassword(email, password)
       .then((userCredential) => {
         var user = userCredential.user;
-        console.log(user.email)
-        history.push("/");
+        if(user.displayName && user.photoURL) {
+          history.push("/");
+        } else {
+          history.push("/profile");
+        }
       })
       .catch((error) => {
         var errorMessage = error.message;

@@ -9,7 +9,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 import SearchIcon from '@material-ui/icons/Search';
 import AddIcon from '@material-ui/icons/Add';
 import firebase from '../../firebase';
-import { Box, Button } from '@material-ui/core';
+import { Avatar, Box, Button } from '@material-ui/core';
 import { useHistory } from 'react-router';
 import Doc from '../components/Doc';
 
@@ -73,7 +73,10 @@ export default function Home() {
   const classes = useStyles();
   const history = useHistory();
   const [docs, setDocs] = useState([])
-  const [user, setUser] = useState("")
+  const [user, setUser] = useState({
+    displayName: ""
+  })
+  const [avatar, setAvatar] = useState()
 
   const signOut = () => {
     firebase.auth().signOut().then(() => {
@@ -89,6 +92,10 @@ export default function Home() {
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
         setUser(user)
+        firebase.storage().ref(user.photoURL).getDownloadURL()
+          .then(img => {
+            setAvatar(img)
+          })
         firebase.database().ref("docs").on("value", (snapshot) => {
           const objects = snapshot.val()
           const objectList = []
@@ -115,6 +122,7 @@ export default function Home() {
           >
             <MenuIcon />
           </IconButton>
+          <Avatar className={classes.menuButton} alt={user.displayName} src={avatar} />
           <Typography className={classes.title} variant="h6" noWrap>
             {user.displayName}
           </Typography>

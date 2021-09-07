@@ -6,6 +6,7 @@ import IconButton from '@material-ui/core/IconButton'
 import Typography from '@material-ui/core/Typography'
 import { alpha, makeStyles } from '@material-ui/core/styles'
 import MenuIcon from '@material-ui/icons/Menu'
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import firebase from '../../firebase'
 import { Box, Button } from '@material-ui/core'
 import { useHistory, useLocation } from 'react-router'
@@ -79,7 +80,6 @@ export default function Doc() {
   const classes = useStyles()
   const history = useHistory()
   let data = new URLSearchParams(useLocation().search).get("data")
-  console.log(data)
 
   const signOut = () => {
     firebase.auth().signOut().then(() => {
@@ -103,8 +103,11 @@ export default function Doc() {
           >
             <MenuIcon />
           </IconButton>
+          <IconButton onClick={() => history.push("/")} className={classes.menuButton} color="inherit">
+            <ArrowBackIcon />
+          </IconButton>
           <Typography className={classes.title} variant="h6" noWrap>
-            Material-UI
+            {window.location.pathname.split('/')[2]}
           </Typography>
           <Button onClick={signOut} color="inherit">Sign Out</Button>
         </Toolbar>
